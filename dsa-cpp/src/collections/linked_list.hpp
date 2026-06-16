@@ -8,8 +8,40 @@
 #include <iostream>
 #include <stdexcept>
 #include "exception.hpp"
+#include "stack.hpp"
+#include "queue.hpp"
 
 using namespace std;
+
+template<typename T>
+class stack_model_l : public stack<T> {
+
+    public:
+
+        void push(const T data) final { stack_push(data); }
+        T pop() final { return stack_pop(); }
+        const T& peek() final { return stack_peek(); }
+
+        virtual void stack_push(const T data) = 0;
+        virtual T stack_pop() = 0;
+        virtual const T& stack_peek() = 0;
+
+};
+
+template<typename T>
+class queue_model_l : public queue<T> {
+
+    public:
+
+        void offer(const T data) final { queue_offer(data); }
+        T poll() final { return queue_poll(); }
+        const T& peek() final { return queue_peek(); }
+
+        virtual void queue_offer(const T data) = 0;
+        virtual T queue_poll() = 0;
+        virtual const T& queue_peek() = 0;
+
+};
 
 template<typename T>
 class node {
@@ -35,7 +67,7 @@ template<typename T>
 ostream& operator << (ostream& os, const linked_list<T>& l);
 
 template<typename T>
-class linked_list {
+class linked_list : public stack_model_l<T>, public queue_model_l<T> {
 
     private:
 
@@ -61,6 +93,8 @@ class linked_list {
             _size = 0;
         }
 
+        // immutable operations
+
         const size_t size() {
             return _size;
         }
@@ -68,6 +102,8 @@ class linked_list {
         const bool is_empty() {
             return head == nullptr;
         }
+
+        // mutable operations
 
         void push_head(const T data) {
             node<T>* ptr = new node(data);
@@ -184,6 +220,8 @@ class linked_list {
             }
         }
 
+        // operator overloads
+
         friend ostream& operator << <>(ostream& os, const linked_list<T>& l);
 
         const T& operator [] (const size_t index) const {
@@ -222,6 +260,39 @@ class linked_list {
             return ptr->data;
             
         }
+
+        // stack mddel overrides
+
+        void stack_push(const T data) override {
+            push_tail(data);
+        }
+
+        T stack_pop() override {
+            return pop_tail();
+        }
+
+        const T& stack_peek() override {
+            if (tail == nullptr)
+                throw new runtime_error(NULL_POINTER_EXCEPTION);
+            return head->data;
+        }
+
+        // queue model overrides
+
+        void queue_offer(const T data) override {
+            push_tail(data);
+        }
+
+        T queue_poll() override {
+            return pop_head();
+        }
+
+        const T& queue_peek() override {
+            if (head == nullptr)
+                throw new runtime_error(NULL_POINTER_EXCEPTION);
+            return head->data;
+        }
+
 };
 
 template<typename T>

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 #include "exception.hpp"
+#include "stack.hpp"
+#include "queue.hpp"
 
 using namespace std;
 
@@ -18,7 +20,37 @@ template<typename T>
 ostream& operator << (ostream& os, const vector<T>& v);
 
 template<typename T>
-class vector {
+class stack_model_v : public stack<T> {
+
+    public:
+
+        void push(const T data) final { stack_push(data); }
+        T pop() final { return stack_pop(); }
+        const T& peek() final { return stack_peek(); }
+
+        virtual void stack_push(const T data) = 0;
+        virtual T stack_pop() = 0;
+        virtual const T& stack_peek() = 0;
+
+};
+
+template<typename T>
+class queue_model_v : public queue<T> {
+
+    public:
+
+        void offer(const T data) final { queue_offer(data); }
+        T poll() final { return queue_poll(); }
+        const T& peek() final { return queue_peek(); }
+
+        virtual void queue_offer(const T data) = 0;
+        virtual T queue_poll() = 0;
+        virtual const T& queue_peek() = 0;
+
+};
+
+template<typename T>
+class vector : public stack_model_v<T>, public queue_model_v<T> {
 
     private:
 
@@ -57,6 +89,8 @@ class vector {
             _capacity = 0;
         }
 
+        // immutable operations
+
         const size_t size() {
             return _size;
         }
@@ -69,13 +103,15 @@ class vector {
             return _size == 0;
         }
 
-        void push(const T data) {
+        // mutable operations
+
+        void append(const T data) {
             if (_size + 1 >= _capacity)
                 expand();
             mem[_size++] = data;
         }
 
-        T pop() {
+        T remove_last() {
             if (_size == 0)
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             return mem[--_size];
@@ -104,6 +140,8 @@ class vector {
             return temp;
         }
 
+        // operator overloads
+
         friend ostream& operator << <>(ostream& os, const vector<T>& v);
 
         const T& operator [] (const size_t index) const {
@@ -117,6 +155,39 @@ class vector {
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             return mem[index];
         }
+
+        // stack model overrides
+
+        void stack_push(const T data) override {
+            append(data);
+        }
+
+        T stack_pop() override {
+            return remove_last();
+        }
+
+        const T& stack_peek() override {
+            if (_size == 0)
+                throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
+            return mem[_size - 1];
+        }
+
+        // queue model overrides
+
+        void queue_offer(const T data) override {
+            append(data);
+        }
+
+        T queue_poll() override {
+            return remove(0);
+        }
+
+        const T& queue_peek() override {
+            if (_size == 0)
+                throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
+            return mem[0];
+        }
+
 };
 
 template<typename T>
