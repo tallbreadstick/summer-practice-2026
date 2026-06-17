@@ -41,3 +41,9 @@ I have implemented some abstract classes for the Stack and Queue data structures
 and Linked List are now polymorphic objects that can match into Stacks or Queues. From this activity, I learned the differences between OOP
 in classic languages like Java and more bare metal ones like C++. I now further appreciate the straightforward nature of Java's OOP, and
 am further amazed by Rust's clean approach at polymorphism while managing to be a low-level language.
+
+## Day 3 : 06/17/2026
+
+### Activity 1 - Deque and VecDeque Abstract Classes
+
+I have further added abstract classes for double-ended queues and vector double-ended queues.

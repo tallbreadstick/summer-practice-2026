@@ -19,5 +19,8 @@ int main(int argc, char **argv) {
         cout << "[" << s->pop() << ", " << q->poll() << "]" << endl;
     }
 
+    cout << s->is_empty() << endl;
+    cout << q->size() << endl;
+
     return 0;
 }

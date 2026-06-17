@@ -10,6 +10,7 @@
 #include "exception.hpp"
 #include "stack.hpp"
 #include "queue.hpp"
+#include "deque.hpp"
 
 using namespace std;
 
@@ -50,7 +51,34 @@ class queue_model_v : public queue<T> {
 };
 
 template<typename T>
-class vector : public stack_model_v<T>, public queue_model_v<T> {
+class deque_model_v : public deque<T> {
+
+    public:
+
+        void push_front(const T data) final { deque_push_front(data); }
+        void push_back(const T data) final { deque_push_back(data); }
+        T pop_front() final { return deque_pop_front(); }
+        T pop_back() final { return deque_pop_back(); }
+        const T& peek_front() final { return deque_peek_front(); }
+        const T& peek_back() final { return deque_peek_back(); }
+
+        virtual void deque_push_front(const T data) = 0;
+        virtual void deque_push_back(const T data) = 0;
+        virtual T deque_pop_front() = 0;
+        virtual T deque_pop_back() = 0;
+        virtual const T& deque_peek_front() = 0;
+        virtual const T& deque_peek_back() = 0; 
+
+};
+
+// vector data structure (dynamic array)
+
+template<typename T>
+class vector :
+    public stack_model_v<T>,
+    public queue_model_v<T>,
+    public deque_model_v<T>
+{
 
     private:
 
@@ -71,15 +99,17 @@ class vector : public stack_model_v<T>, public queue_model_v<T> {
 
     public:
 
+        // constructors and destructors
+
         vector() {
             _size = 0;
             _capacity = 10;
             mem = new T[_capacity];
         }
 
-        vector(const size_t _capacity) {
+        vector(const size_t capacity) {
             _size = 0;
-            this->_capacity = _capacity;
+            _capacity = capacity;
             mem = new T[_capacity];
         }
 
@@ -140,6 +170,16 @@ class vector : public stack_model_v<T>, public queue_model_v<T> {
             return temp;
         }
 
+        void shrink_to_fit() {
+            _capacity = _size;
+            T* temp = new T[_capacity];
+            for (size_t i = 0; i < _size; i++) {
+                temp[i] = mem[i];
+            }
+            delete[] mem;
+            mem = temp;
+        }
+
         // operator overloads
 
         friend ostream& operator << <>(ostream& os, const vector<T>& v);
@@ -186,6 +226,36 @@ class vector : public stack_model_v<T>, public queue_model_v<T> {
             if (_size == 0)
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             return mem[0];
+        }
+
+        // deque model overrides
+
+        void deque_push_front(const T data) override {
+            insert(0, data);
+        }
+
+        void deque_push_back(const T data) override {
+            append(data);
+        }
+
+        T deque_pop_front() override {
+            return remove(0);
+        }
+
+        T deque_pop_back() override {
+            return remove_last();
+        }
+
+        const T& deque_peek_front() override {
+            if (_size == 0)
+                throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
+            return mem[0];
+        }
+
+        const T& deque_peek_back() override {
+            if (_size == 0)
+                throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
+            return mem[_size - 1];
         }
 
 };

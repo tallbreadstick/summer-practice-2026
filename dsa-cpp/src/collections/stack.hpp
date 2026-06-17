@@ -9,6 +9,8 @@
 
 using namespace std;
 
+// stack abstract class
+
 template<typename T>
 class stack {
 
@@ -18,6 +20,7 @@ class stack {
 
         virtual const size_t size() = 0;
         virtual const bool is_empty() = 0;
+        
         virtual void push(const T data) = 0;
         virtual T pop() = 0;
         virtual const T& peek() = 0;

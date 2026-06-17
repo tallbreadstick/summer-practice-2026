@@ -10,6 +10,7 @@
 #include "exception.hpp"
 #include "stack.hpp"
 #include "queue.hpp"
+#include "deque.hpp"
 
 using namespace std;
 
@@ -44,6 +45,27 @@ class queue_model_l : public queue<T> {
 };
 
 template<typename T>
+class deque_model_l : public deque<T> {
+
+    public:
+
+        void push_front(const T data) final { deque_push_front(data); }
+        void push_back(const T data) final { deque_push_back(data); }
+        T pop_front() final { return deque_pop_front(); }
+        T pop_back() final { return deque_pop_back(); }
+        const T& peek_front() final { return deque_peek_front(); }
+        const T& peek_back() final { return deque_peek_back(); }
+
+        virtual void deque_push_front(const T data) = 0;
+        virtual void deque_push_back(const T data) = 0;
+        virtual T deque_pop_front() = 0;
+        virtual T deque_pop_back() = 0;
+        virtual const T& deque_peek_front() = 0;
+        virtual const T& deque_peek_back() = 0; 
+
+};
+
+template<typename T>
 class node {
 
     public:
@@ -66,8 +88,14 @@ class linked_list;
 template<typename T>
 ostream& operator << (ostream& os, const linked_list<T>& l);
 
+// doubly-linked list data structure
+
 template<typename T>
-class linked_list : public stack_model_l<T>, public queue_model_l<T> {
+class linked_list :
+    public stack_model_l<T>,
+    public queue_model_l<T>,
+    public deque_model_l<T>
+{
 
     private:
 
@@ -76,6 +104,8 @@ class linked_list : public stack_model_l<T>, public queue_model_l<T> {
         size_t _size;
 
     public:
+
+        // constructors and desctructors
 
         linked_list() {
             head = nullptr;
@@ -291,6 +321,36 @@ class linked_list : public stack_model_l<T>, public queue_model_l<T> {
             if (head == nullptr)
                 throw new runtime_error(NULL_POINTER_EXCEPTION);
             return head->data;
+        }
+
+        // deque model overrides
+
+        void deque_push_front(const T data) override {
+            push_head(data);
+        }
+
+        void deque_push_back(const T data) override {
+            push_tail(data);
+        }
+
+        T deque_pop_front() override {
+            return pop_head();
+        }
+
+        T deque_pop_back() override {
+            return pop_tail();
+        }
+
+        const T& deque_peek_front() override {
+            if (head == nullptr)
+                throw new runtime_error(NULL_POINTER_EXCEPTION);
+            return head->data;
+        }
+
+        const T& deque_peek_back() override {
+            if (tail == nullptr)
+                throw new runtime_error(NULL_POINTER_EXCEPTION);
+            return tail->data;
         }
 
 };
