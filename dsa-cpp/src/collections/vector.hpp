@@ -136,7 +136,7 @@ class vector :
         // mutable operations
 
         void append(const T data) {
-            if (_size + 1 >= _capacity)
+            if (_size == _capacity)
                 expand();
             mem[_size++] = data;
         }
@@ -148,9 +148,9 @@ class vector :
         }
 
         void insert(const size_t index, const T data) {
-            if (index > _size || index < 0)
+            if (index > _size)
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
-            if (_size + 1 >= _capacity)
+            if (_size == _capacity)
                 expand();
             for (size_t i = _size; i > index; i--) {
                 mem[i] = mem[i - 1];
@@ -160,7 +160,7 @@ class vector :
         }
 
         T remove(const size_t index) {
-            if (index >= _size || index < 0)
+            if (index >= _size)
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             T temp = mem[index];
             for (size_t i = index; i < _size - 1; i++) {
@@ -185,13 +185,13 @@ class vector :
         friend ostream& operator << <>(ostream& os, const vector<T>& v);
 
         const T& operator [] (const size_t index) const {
-            if (index >= _size || index < 0)
+            if (index >= _size)
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             return mem[index];
         }
 
         T& operator [] (const size_t index) {
-            if (index >= _size || index < 0)
+            if (index >= _size )
                 throw new runtime_error(INDEX_OUT_OF_BOUNDS_EXCEPTION);
             return mem[index];
         }

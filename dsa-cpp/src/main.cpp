@@ -1,26 +1,26 @@
 #include <iostream>
 #include "collections/vector.hpp"
 #include "collections/linked_list.hpp"
+#include "collections/ring_buffer.hpp"
 #include "collections/stack.hpp"
 
 using namespace std;
 
 int main(int argc, char **argv) {
     
-    stack<int>* s = new vector<int>();
-    queue<int>* q = new linked_list<int>();
+    ring_buffer<int> r;
 
-    for (size_t i = 0; i < 10; i++) {
-        s->push(i);
-        q->offer(i);
+    for (int i = 0; i < 10; i++) {
+        r.push_head(i);
     }
 
-    while (!s->is_empty()) {
-        cout << "[" << s->pop() << ", " << q->poll() << "]" << endl;
+    cout << r << endl;
+
+    for (int i = 0; i < 10; i++) {
+        r.push_tail(i);
     }
 
-    cout << s->is_empty() << endl;
-    cout << q->size() << endl;
+    cout << r << endl;
 
     return 0;
 }
